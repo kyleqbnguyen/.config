@@ -1,14 +1,9 @@
 GIMP/
-btop/
-cava/
 dconf/
 discord/
-go/
 pulse/
 qmk/
 spotify/
 nvim/
-tmux-sessionizer/
-user-dirs.dirs
-tmux/
-ghostty/
+tmux/plugins/
+go/
