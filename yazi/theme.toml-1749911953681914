@@ -3,7 +3,7 @@
 # upstream: ${upstream}
 # author: Andrea Schiavini (original code by Casey Miller)
 
-[mgr]
+[manager]
 cwd = { fg = "#888888" }
 
 hovered         = { fg = "#c1c1c1", bg = "#000000" }
