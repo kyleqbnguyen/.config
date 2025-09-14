@@ -86,6 +86,7 @@ require("black-metal").setup({
 	highlights = {
 		ColorColumn = { bg = "fg"},
 		Visual = { fg = "type" },
+		StatusLine = { bg = "fg" , fg = "bg" },
 		["@punctuation.bracket"] = { fg = "constant" },
 		["@constructor.lua"] = { fg = "constant" },
 	},
