@@ -23,4 +23,4 @@ shell-integration-features = cursor, no-sudo, no-title
 
 keybind = ctrl+enter=unbind
 
-command = zsh --login -c "if command -v tmux >/dev/null 2>&1; then tmux attach || ~/.local/bin/tmux-sessionizer /home/red; else zsh; fi"
+command = zsh --login -c "if command -v tmux >/dev/null 2>&1; then tmux attach || $HOME/.local/bin/tmux-sessionizer $HOME; else zsh; fi"
