@@ -6,3 +6,4 @@ qmk/
 spotify/
 tmux/plugins/
 go/
+tmux-sessionizer/tmux-sessionizer.conf
