@@ -48,51 +48,8 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/mbbill/undotree" },
+	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
 })
-
-require("mason").setup()
-
-require("black-metal").setup({
-	theme = "darkthrone",
-	variant = "dark",
-	alt_bg = false,
-	colored_docstrings = true,
-	cursorline_gutter = false,
-	dark_gutter = true,
-	favor_treesitter_hl = false,
-	plain_float = true,
-	show_eob = true,
-	term_colors = true,
-	toggle_variant_key = nil,
-	transparent = false,
-
-	diagnostics = {
-		darker = true,
-		undercurl = false,
-		background = false,
-	},
-
-	code_style = {
-		comments = "none",
-		conditionals = "none",
-		functions = "none",
-		keywords = "none",
-		headings = "bold",
-		operators = "none",
-		keyword_return = "none",
-		strings = "none",
-		variables = "none",
-	},
-	highlights = {
-		ColorColumn = { bg = "fg"},
-		Visual = { fg = "type" },
-		StatusLine = { bg = "fg" , fg = "bg" },
-		["@punctuation.bracket"] = { fg = "constant" },
-		["@constructor.lua"] = { fg = "constant" },
-	},
-})
-
-require("black-metal").load()
 
 vim.api.nvim_create_autocmd('LspAttach', {
 	group = vim.api.nvim_create_augroup('my.lsp', {}),
@@ -160,6 +117,68 @@ require "telescope".setup({
 		}
 	},
 })
+
+require("black-metal").setup({
+	theme = "darkthrone",
+	variant = "dark",
+	alt_bg = false,
+	colored_docstrings = true,
+	cursorline_gutter = false,
+	dark_gutter = true,
+	favor_treesitter_hl = false,
+	plain_float = true,
+	show_eob = true,
+	term_colors = true,
+	toggle_variant_key = nil,
+	transparent = false,
+
+	diagnostics = {
+		darker = true,
+		undercurl = false,
+		background = false,
+	},
+
+	code_style = {
+		comments = "none",
+		conditionals = "none",
+		functions = "none",
+		keywords = "none",
+		headings = "bold",
+		operators = "none",
+		keyword_return = "none",
+		strings = "none",
+		variables = "none",
+	},
+	highlights = {
+		ColorColumn = { bg = "fg"},
+		Visual = { fg = "type" },
+		StatusLine = { bg = "fg" , fg = "bg" },
+		["@punctuation.bracket"] = { fg = "constant" },
+		["@constructor.lua"] = { fg = "constant" },
+	},
+})
+
+require("render-markdown").setup({
+	completions = { lsp = { enabled = true } },
+	heading = {
+		sign = false,
+		backgrounds = {
+			'RenderMarkdownH2Bg',
+			'RenderMarkdownH2Bg',
+			'RenderMarkdownH2Bg',
+			'RenderMarkdownH2Bg',
+			'RenderMarkdownH2Bg',
+			'RenderMarkdownH2Bg',
+		},
+	},
+	code = {
+		highlight = 'RenderMarkdownH3Bg',
+		highlight_border = 'RenderMarkdownH3Bg',
+	},
+})
+require("black-metal").load()
+
+require("mason").setup()
 
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>")
 vim.keymap.set("n", "<leader>gr", ":Telescope live_grep<CR>")
