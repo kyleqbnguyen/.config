@@ -62,7 +62,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 vim.cmd [[set completeopt+=menuone,noselect,popup]]
 
-vim.lsp.enable({ "lua_ls" , "jdtls" })
+vim.lsp.enable({ "lua_ls" , "jdtls", "ts_ls" })
 vim.lsp.config("lua_ls", {
 	settings = {
 		Lua = {
@@ -72,6 +72,8 @@ vim.lsp.config("lua_ls", {
 		}
 	}
 })
+
+local square_borders = { "─", "│", "─", "│", "┌", "┐", "┘", "└" }
 
 require "telescope".setup({
 	defaults = {
@@ -83,30 +85,23 @@ require "telescope".setup({
 	},
 
 	pickers = {
-		find_files = {
-			theme = 'dropdown',
-			border = true,
-			borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-		},
-
-		live_grep = {
-			theme = 'dropdown',
-			border = true,
-			borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-		},
-
-		help_tags = {
-			theme = 'dropdown',
-			border = true,
-			borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-		},
-
-		git_files = {
-			theme = 'dropdown',
-			border = true,
-			borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-		},
-	},
+    find_files = {
+      theme = "dropdown",
+      borderchars = square_borders,
+    },
+    live_grep = {
+      theme = "dropdown",
+      borderchars = square_borders,
+    },
+    help_tags = {
+      theme = "dropdown",
+      borderchars = square_borders,
+    },
+    git_files = {
+      theme = "dropdown",
+      borderchars = square_borders,
+    },
+  },
 
 	extensions = {
 		fzf = {
@@ -174,6 +169,7 @@ require("render-markdown").setup({
 	code = {
 		highlight = 'RenderMarkdownH3Bg',
 		highlight_border = 'RenderMarkdownH3Bg',
+		highlight_inline = 'RenderMarkdownH3Bg',
 	},
 })
 require("black-metal").load()
