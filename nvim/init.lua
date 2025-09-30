@@ -42,13 +42,13 @@ vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww ~/.local/bin/tmux-sessioniz
 -- Pack
 vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
-	{ src = "https://github.com/metalelf0/black-metal-theme-neovim" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
 	{ src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/mbbill/undotree" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+	{ src = "https://github.com/slugbyte/lackluster.nvim" },
 })
 
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -113,66 +113,44 @@ require "telescope".setup({
 	},
 })
 
-require("black-metal").setup({
-	theme = "darkthrone",
-	variant = "dark",
-	alt_bg = false,
-	colored_docstrings = true,
-	cursorline_gutter = false,
-	dark_gutter = true,
-	favor_treesitter_hl = false,
-	plain_float = true,
-	show_eob = true,
-	term_colors = true,
-	toggle_variant_key = nil,
-	transparent = false,
-
-	diagnostics = {
-		darker = true,
-		undercurl = false,
-		background = false,
-	},
-
-	code_style = {
-		comments = "none",
-		conditionals = "none",
-		functions = "none",
-		keywords = "none",
-		headings = "bold",
-		operators = "none",
-		keyword_return = "none",
-		strings = "none",
-		variables = "none",
-	},
-	highlights = {
-		ColorColumn = { bg = "fg"},
-		Visual = { fg = "type" },
-		StatusLine = { bg = "fg" , fg = "bg" },
-		["@punctuation.bracket"] = { fg = "constant" },
-		["@constructor.lua"] = { fg = "constant" },
-	},
-})
-
 require("render-markdown").setup({
 	completions = { lsp = { enabled = true } },
 	heading = {
 		sign = false,
-		backgrounds = {
-			'RenderMarkdownH2Bg',
-			'RenderMarkdownH2Bg',
-			'RenderMarkdownH2Bg',
-			'RenderMarkdownH2Bg',
-			'RenderMarkdownH2Bg',
-			'RenderMarkdownH2Bg',
-		},
-	},
-	code = {
-		highlight = 'RenderMarkdownH3Bg',
-		highlight_border = 'RenderMarkdownH3Bg',
-		highlight_inline = 'RenderMarkdownH3Bg',
 	},
 })
-require("black-metal").load()
+
+local color = require("lackluster").color
+
+require("lackluster").setup({
+	tweak_highlight = {
+		-- modify @keyword's highlights to be bold and italic
+		["@keyword"] = {
+			overwrite = false, -- overwrite falsey will extend/update lackluster's defaults (nil also does this)
+			bold = true,
+			italic = false,
+			-- see `:help nvim_set_hl` for all possible keys
+		},
+		-- overwrite @function to link to @keyword
+		["@function"] = {
+			overwrite = true, -- overwrite == true will force overwrite lackluster's default highlights
+			link = "@keyword",
+		},
+	},
+	tweak_ui = {
+		disable_undercurl = true,
+		enable_end_of_buffer = true,
+	},
+	tweak_syntax = {
+		comment = color.gray4, -- or gray5
+	},
+	tweak_background = {
+		normal = 'none',
+		menu = color.gray3,
+		popup = 'default',
+	},
+})
+vim.cmd("colorscheme lackluster-dark")
 
 require("mason").setup()
 
