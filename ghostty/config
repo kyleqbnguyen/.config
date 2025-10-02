@@ -1,8 +1,8 @@
 font-family = CaskaydiaCove NF
-font-size = 16
+font-size = 22
 
 # theme = Tomorrow Night Burns
-theme = darkthrone
+theme = lackluster
 
 font-thicken = true
 

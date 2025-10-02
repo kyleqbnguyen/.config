@@ -49,8 +49,11 @@ vim.pack.add({
 	{ src = "https://github.com/mbbill/undotree" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
 	{ src = "https://github.com/slugbyte/lackluster.nvim" },
+	{ src = "https://github.com/ThePrimeagen/harpoon" },
 })
 
+--------------------------------------------------------------------------------
+--- LSP
 vim.api.nvim_create_autocmd('LspAttach', {
 	group = vim.api.nvim_create_augroup('my.lsp', {}),
 	callback = function(args)
@@ -62,7 +65,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 vim.cmd [[set completeopt+=menuone,noselect,popup]]
 
-vim.lsp.enable({ "lua_ls" , "jdtls", "ts_ls" })
+vim.lsp.enable({ "lua_ls" , "jdtls", "ts_ls", "eslint" })
 vim.lsp.config("lua_ls", {
 	settings = {
 		Lua = {
@@ -73,6 +76,8 @@ vim.lsp.config("lua_ls", {
 	}
 })
 
+--------------------------------------------------------------------------------
+--- Telescope
 local square_borders = { "─", "│", "─", "│", "┌", "┐", "┘", "└" }
 
 require "telescope".setup({
@@ -113,16 +118,19 @@ require "telescope".setup({
 	},
 })
 
-require("render-markdown").setup({
-	completions = { lsp = { enabled = true } },
-	heading = {
-		sign = false,
-	},
-})
+vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>")
+vim.keymap.set("n", "<leader>gr", ":Telescope live_grep<CR>")
+vim.keymap.set("n", "<leader>gf", ":Telescope git_files<CR>")
+vim.keymap.set("n", "<leader>ht", ":Telescope help_tags<CR>")
 
+--------------------------------------------------------------------------------
+--- Colorscheme
 local color = require("lackluster").color
 
 require("lackluster").setup({
+	tweak_color = {
+		red = "#aa6666",
+	},
 	tweak_highlight = {
 		-- modify @keyword's highlights to be bold and italic
 		["@keyword"] = {
@@ -135,6 +143,13 @@ require("lackluster").setup({
 		["@function"] = {
 			overwrite = true, -- overwrite == true will force overwrite lackluster's default highlights
 			link = "@keyword",
+		},
+
+		TelescopeMatching = {
+			overwrite = true, -- force overwrite instead of extending
+			bold = false,
+			italic = false,
+			fg =  "#aa6666", -- pick a color you like
 		},
 	},
 	tweak_ui = {
@@ -152,11 +167,30 @@ require("lackluster").setup({
 })
 vim.cmd("colorscheme lackluster-dark")
 
+--------------------------------------------------------------------------------
+--- Harpoon
+local mark = require("harpoon.mark")
+local ui = require("harpoon.ui")
+
+vim.keymap.set("n", "<leader>a", mark.add_file)
+
+vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
+
+vim.keymap.set("n", "<A-q>", function() ui.nav_file(1) end)
+vim.keymap.set("n", "<A-w>", function() ui.nav_file(2) end)
+vim.keymap.set("n", "<A-f>", function() ui.nav_file(3) end)
+vim.keymap.set("n", "<A-p>", function() ui.nav_file(4) end)
+
+--------------------------------------------------------------------------------
+--- Markdown
+require("render-markdown").setup({
+	completions = { lsp = { enabled = true } },
+	heading = {
+		sign = false,
+	},
+})
+
+--------------------------------------------------------------------------------
+--- No Config
 require("mason").setup()
-
-vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>")
-vim.keymap.set("n", "<leader>gr", ":Telescope live_grep<CR>")
-vim.keymap.set("n", "<leader>gf", ":Telescope git_files<CR>")
-vim.keymap.set("n", "<leader>ht", ":Telescope help_tags<CR>")
-
 --------------------------------------------------------------------------------
