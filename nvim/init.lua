@@ -1,4 +1,6 @@
 --------------------------------------------------------------------------------
+vim.g.mapleader = " "
+
 -- Gui
 vim.g.netrw_banner = 0
 vim.o.number = true
@@ -23,9 +25,7 @@ vim.o.backup = false
 vim.o.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.o.undofile = true
 
--- Remap
-vim.g.mapleader = " "
-
+--- Remaps
 vim.keymap.set("n", "<leader>nw", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>gq", vim.lsp.buf.format)
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
@@ -33,6 +33,8 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "G", "Gzz")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set({ "n", "v", "x" }, "<leader>y", [["+y]])
 vim.keymap.set({ "n", "v", "x" }, "<leader>d", [["+d]])
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
@@ -74,6 +76,13 @@ vim.lsp.config("lua_ls", {
 			}
 		}
 	}
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "html", "css", "markdown" },
+  callback = function()
+    vim.bo.formatprg = "prettierd %"
+  end,
 })
 
 --------------------------------------------------------------------------------
