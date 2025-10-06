@@ -96,6 +96,7 @@ require "telescope".setup({
 				["<C-c>"] = require("telescope.actions").close,
 			},
 		},
+		file_ignore_patterns = {"node_modules/"},
 	},
 
 	pickers = {
