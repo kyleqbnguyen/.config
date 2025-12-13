@@ -67,7 +67,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 vim.cmd [[set completeopt+=menuone,noselect,popup]]
 
-vim.lsp.enable({ "lua_ls" , "jdtls", "ts_ls", "eslint" })
+vim.lsp.enable({ "lua_ls" , "ts_ls", "eslint", "rust_analyzer", "clangd",})
 vim.lsp.config("lua_ls", {
 	settings = {
 		Lua = {
@@ -79,7 +79,7 @@ vim.lsp.config("lua_ls", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "html", "css", "markdown" },
+  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "html", "css", },
   callback = function()
     vim.bo.formatprg = "prettierd %"
   end,
@@ -96,7 +96,7 @@ require "telescope".setup({
 				["<C-c>"] = require("telescope.actions").close,
 			},
 		},
-		file_ignore_patterns = {"node_modules/"},
+		file_ignore_patterns = {"node_modules/", "target/"},
 	},
 
 	pickers = {
@@ -198,6 +198,14 @@ require("render-markdown").setup({
 	heading = {
 		sign = false,
 	},
+	code = {
+					highlight_inline = 'RenderMarkdownH6Bg',
+					highlight = 'RenderMarkdownH6Bg',
+					conceal = true,
+	},
+	inline_code = {
+    conceal = true,
+  },
 })
 
 --------------------------------------------------------------------------------
