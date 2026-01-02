@@ -18,6 +18,8 @@ vim.o.tabstop = 2
 vim.o.wrap = false
 vim.o.smartindent = true
 vim.o.incsearch = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
 -- Misc
 vim.o.swapfile = false
