@@ -15,9 +15,14 @@ vim.o.termguicolors = true
 
 -- Text
 vim.o.tabstop = 2
+vim.o.expandtab = true
+vim.o.shiftwidth = 2
+vim.o.softtabstop = 2
 vim.o.wrap = false
 vim.o.smartindent = true
 vim.o.incsearch = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
 -- Misc
 vim.o.swapfile = false
@@ -186,10 +191,10 @@ vim.keymap.set("n", "<leader>a", mark.add_file)
 
 vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
 
-vim.keymap.set("n", "<A-q>", function() ui.nav_file(1) end)
-vim.keymap.set("n", "<A-w>", function() ui.nav_file(2) end)
-vim.keymap.set("n", "<A-f>", function() ui.nav_file(3) end)
-vim.keymap.set("n", "<A-p>", function() ui.nav_file(4) end)
+vim.keymap.set("n", "<A-n>", function() ui.nav_file(1) end)
+vim.keymap.set("n", "<A-e>", function() ui.nav_file(2) end)
+vim.keymap.set("n", "<A-i>", function() ui.nav_file(3) end)
+vim.keymap.set("n", "<A-o>", function() ui.nav_file(4) end)
 
 --------------------------------------------------------------------------------
 --- Markdown
