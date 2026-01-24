@@ -101,7 +101,7 @@ require "telescope".setup({
 				["<C-c>"] = require("telescope.actions").close,
 			},
 		},
-		file_ignore_patterns = {"node_modules/", "target/"},
+		file_ignore_patterns = {"build/", "node_modules/", "target/"},
 	},
 
 	pickers = {
@@ -143,76 +143,117 @@ vim.keymap.set("n", "<leader>ht", ":Telescope help_tags<CR>")
 local color = require("lackluster").color
 
 require("lackluster").setup({
-	tweak_color = {
-		red = "#aa6666",
-	},
-	tweak_highlight = {
-		-- modify @keyword's highlights to be bold and italic
-		["@keyword"] = {
-			overwrite = false, -- overwrite falsey will extend/update lackluster's defaults (nil also does this)
-			bold = true,
-			italic = false,
-			-- see `:help nvim_set_hl` for all possible keys
-		},
-		-- overwrite @function to link to @keyword
-		["@function"] = {
-			overwrite = true, -- overwrite == true will force overwrite lackluster's default highlights
-			link = "@keyword",
-		},
-
-		TelescopeMatching = {
-			overwrite = true, -- force overwrite instead of extending
-			bold = false,
-			italic = false,
-			fg =  "#aa6666", -- pick a color you like
-		},
-	},
-	tweak_ui = {
-		disable_undercurl = true,
-		enable_end_of_buffer = true,
-	},
-	tweak_syntax = {
-		comment = color.gray4, -- or gray5
-	},
-	tweak_background = {
-		normal = 'none',
-		menu = color.gray3,
-		popup = 'default',
-	},
+  tweak_color = {
+    red = "#aa6666",
+  },
+  tweak_highlight = {
+    -- diagnostics
+    NormalFloat = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    -- buf.hover()
+    FloatBorder = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    MatchParen = {
+      overwrite = true,
+      bg = color.gray3,
+    },
+    -- modify @keyword's highlights to be bold and italic
+    ["@keyword"] = {
+      overwrite = false, -- overwrite falsey will extend/update lackluster's defaults (nil also does this)
+      bold = true,
+      italic = false,
+      -- see `:help nvim_set_hl` for all possible keys
+    },
+    -- overwrite @function to link to @keyword
+    ["@function"] = {
+      overwrite = true, -- overwrite == true will force overwrite lackluster's default highlights
+      link = "@keyword",
+    },
+    TelescopeMatching = {
+      overwrite = true, -- force overwrite instead of extending
+      bold = false,
+      italic = false,
+      fg = "#aa6666", -- pick a color you like
+    },
+    TelescopeNormal = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    TelescopeBorder = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    TelescopePreviewNormal = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    TelescopePreviewBorder = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    TelescopePromptNormal = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    TelescopePromptBorder = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    TelescopeResultsNormal = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    TelescopeResultsBorder = {
+      overwrite = true,
+      bg = "NONE",
+    },
+  },
+  tweak_ui = {
+    disable_undercurl = true,
+    enable_end_of_buffer = true,
+  },
+  tweak_syntax = {
+    comment = color.gray4, -- or gray5
+  },
+  tweak_background = {
+    normal = 'none',
+    menu = color.gray3,
+    popup = 'default',
+  },
 })
 vim.cmd("colorscheme lackluster-dark")
-
 --------------------------------------------------------------------------------
 --- Harpoon
 local mark = require("harpoon.mark")
 local ui = require("harpoon.ui")
 
 vim.keymap.set("n", "<leader>a", mark.add_file)
-
 vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
-
-vim.keymap.set("n", "<A-n>", function() ui.nav_file(1) end)
-vim.keymap.set("n", "<A-e>", function() ui.nav_file(2) end)
-vim.keymap.set("n", "<A-i>", function() ui.nav_file(3) end)
-vim.keymap.set("n", "<A-o>", function() ui.nav_file(4) end)
-
+vim.keymap.set("n", "<A-m>", function() ui.nav_file(1) end)
+vim.keymap.set("n", "<A-n>", function() ui.nav_file(2) end)
+vim.keymap.set("n", "<A-e>", function() ui.nav_file(3) end)
+vim.keymap.set("n", "<A-i>", function() ui.nav_file(4) end)
 --------------------------------------------------------------------------------
 --- Markdown
 require("render-markdown").setup({
-	completions = { lsp = { enabled = true } },
-	heading = {
-		sign = false,
-	},
-	code = {
-					highlight_inline = 'RenderMarkdownH6Bg',
-					highlight = 'RenderMarkdownH6Bg',
-					conceal = true,
-	},
-	inline_code = {
+  completions = { lsp = { enabled = true } },
+  heading = {
+    icons = { '󰼏 ', '󰎨 ' },
+    backgrounds = {},
+  },
+  code = {
+    conceal = true,
+    width = 'block',
+    -- min_width = 80,
+  },
+  inline_code = {
     conceal = true,
   },
 })
-
 --------------------------------------------------------------------------------
 --- No Config
 require("mason").setup()
