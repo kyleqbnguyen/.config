@@ -147,6 +147,17 @@ require("lackluster").setup({
     red = "#aa6666",
   },
   tweak_highlight = {
+    StatusLine = {
+      overwrite = true,
+      fg = color.gray8,
+      bg = color.gray2,
+    },
+    -- inactive status line
+    StatusLineNC = {
+      overwrite = true,
+      fg = color.gray6,
+      bg = color.gray2,
+    },
     -- diagnostics
     NormalFloat = {
       overwrite = true,
