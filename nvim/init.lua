@@ -1,12 +1,14 @@
 --------------------------------------------------------------------------------
 vim.g.mapleader = " "
 
+-- Custom statusline
+require("statusline")
+
 -- Gui
 vim.g.netrw_banner = 0
 vim.o.number = true
 vim.o.relativenumber = true
 vim.opt.guicursor = { "n-v:block", "i-c:block-blinkon500-blinkoff500" }
-vim.o.statusline = "%f %m%=%l,%c %q%y%r"
 vim.o.scrolloff = 8
 vim.o.colorcolumn = "81"
 vim.o.signcolumn = "yes"
