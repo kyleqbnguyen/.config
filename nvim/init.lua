@@ -50,46 +50,40 @@ vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww ~/.local/bin/tmux-sessioniz
 --------------------------------------------------------------------------------
 -- Pack
 vim.pack.add({
-	{ src = "https://github.com/neovim/nvim-lspconfig" },
-	{ src = "https://github.com/nvim-lua/plenary.nvim" },
-	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
-	{ src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-	{ src = "https://github.com/mason-org/mason.nvim" },
-	{ src = "https://github.com/mbbill/undotree" },
-	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
-	{ src = "https://github.com/slugbyte/lackluster.nvim" },
-	{ src = "https://github.com/ThePrimeagen/harpoon" },
+  { src = "https://github.com/neovim/nvim-lspconfig" },
+  { src = "https://github.com/nvim-lua/plenary.nvim" },
+  { src = "https://github.com/nvim-telescope/telescope.nvim" },
+  { src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+  { src = "https://github.com/mason-org/mason.nvim" },
+  { src = "https://github.com/mbbill/undotree" },
+  { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+  { src = "https://github.com/slugbyte/lackluster.nvim" },
+  { src = "https://github.com/ThePrimeagen/harpoon" },
   { src = "https://github.com/nvim-treesitter/nvim-treesitter",          version = "main" },
 })
 
 --------------------------------------------------------------------------------
---- Treesitter
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { "lua", "javascript", "javascriptreact", "typescript", "typescriptreact", "rust", "c", "cpp" },
-  callback = function() vim.treesitter.start() end,
-})
-
 --- LSP
 vim.api.nvim_create_autocmd('LspAttach', {
-	group = vim.api.nvim_create_augroup('my.lsp', {}),
-	callback = function(args)
-		local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-		if client:supports_method('textDocument/completion') then
-			vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
-		end
-	end,
+  group = vim.api.nvim_create_augroup('my.lsp', {}),
+  callback = function(args)
+    local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+    if client:supports_method('textDocument/completion') then
+      vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
+    end
+  end,
 })
 vim.cmd [[set completeopt+=menuone,noselect,popup]]
 
-vim.lsp.enable({ "lua_ls" , "ts_ls", "eslint", "rust_analyzer", "clangd",})
+vim.lsp.enable({ "lua_ls", "ts_ls", "eslint", "rust_analyzer", "clangd", "cmake" })
 vim.lsp.config("lua_ls", {
-	settings = {
-		Lua = {
-			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true),
-			}
-		}
-	}
+  settings = {
+    Lua = {
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+      }
+    }
+  }
 })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -104,17 +98,17 @@ vim.api.nvim_create_autocmd("FileType", {
 local square_borders = { "─", "│", "─", "│", "┌", "┐", "┘", "└" }
 
 require "telescope".setup({
-	defaults = {
-    preview = {treesitter = true},
-		mappings = {
-			n = {
-				["<C-c>"] = require("telescope.actions").close,
-			},
-		},
-		file_ignore_patterns = {"build/", "node_modules/", "target/"},
-	},
+  defaults = {
+    preview = { treesitter = true },
+    mappings = {
+      n = {
+        ["<C-c>"] = require("telescope.actions").close,
+      },
+    },
+    file_ignore_patterns = { "build/", "node_modules/", "target/" },
+  },
 
-	pickers = {
+  pickers = {
     find_files = {
       theme = "dropdown",
       borderchars = square_borders,
@@ -133,14 +127,14 @@ require "telescope".setup({
     },
   },
 
-	extensions = {
-		fzf = {
-			fuzzy = true,
-			override_generic_sorter = true,
-			override_file_sorter = true,
-			case_mode = "smart_case",
-		}
-	},
+  extensions = {
+    fzf = {
+      fuzzy = true,
+      override_generic_sorter = true,
+      override_file_sorter = true,
+      case_mode = "smart_case",
+    }
+  },
 })
 
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>")
