@@ -271,9 +271,36 @@ require("render-markdown").setup({
 require("luasnip").setup({ enable_autosnippets = true })
 require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/snippets/" })
 
+local ls = require("luasnip")
+
+vim.keymap.set({ "i", "s" }, "<C-j>", function() ls.jump(1) end, { silent = true })
+vim.keymap.set({ "i", "s" }, "<C-k>", function() ls.jump(-1) end, { silent = true })
+
+vim.keymap.set({ "i", "s" }, "<C-n>", function()
+  if ls.choice_active() then
+    ls.change_choice(1)
+  end
+end, { silent = true })
+
+vim.keymap.set({ "i", "s" }, "<C-p>", function()
+  if ls.choice_active() then
+    ls.change_choice(-1)
+  end
+end, { silent = true })
+
 --------------------------------------------------------------------------------
 --- Blinkcmp
 require("blink.cmp").setup({
+  snippets = {
+    preset = "luasnip",
+  },
+  sources = {
+    default = { 'lsp', 'path', 'snippets', 'buffer' },
+  },
+  keymap = {
+    preset = "default",
+    ['<C-k>'] = false,
+  },
   signature = { enabled = true },
   completion = {
     documentation = { auto_show = true, auto_show_delay_ms = 500 },
@@ -286,7 +313,6 @@ require("blink.cmp").setup({
     },
   },
 })
-
 vim.api.nvim_set_hl(0, "Pmenu", { bg = "none" })
 vim.api.nvim_set_hl(0, "BlinkCmpMenu", { bg = "none" })
 vim.api.nvim_set_hl(0, "BlinkCmpMenuBorder", { bg = "none" })
