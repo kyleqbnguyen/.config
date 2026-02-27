@@ -33,6 +33,7 @@ vim.o.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.o.undofile = true
 
 --- Remaps
+vim.keymap.set({ "n", "i", "v", "x", "s", "o" }, "<C-c>", "<Esc>", { silent = true })
 vim.keymap.set("n", "<leader>nw", vim.cmd.Ex)
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
@@ -268,7 +269,14 @@ require("render-markdown").setup({
 
 --------------------------------------------------------------------------------
 --- Luasnip
-require("luasnip").setup({ enable_autosnippets = true })
+require("luasnip").setup({
+  keep_roots = true,
+  link_roots = true,
+  link_children = true,
+  exit_roots = false,
+  -- update_events = { "TextChanged", "TextChangedI" },
+  update_events = "InsertLeave",
+})
 require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/snippets/" })
 
 local ls = require("luasnip")
@@ -295,7 +303,7 @@ require("blink.cmp").setup({
     preset = "luasnip",
   },
   sources = {
-    default = { 'lsp', 'path', 'snippets', 'buffer' },
+    default = { 'snippets', 'lsp', 'path', 'buffer' },
   },
   keymap = {
     preset = "default",
@@ -313,6 +321,7 @@ require("blink.cmp").setup({
     },
   },
 })
+
 vim.api.nvim_set_hl(0, "Pmenu", { bg = "none" })
 vim.api.nvim_set_hl(0, "BlinkCmpMenu", { bg = "none" })
 vim.api.nvim_set_hl(0, "BlinkCmpMenuBorder", { bg = "none" })
