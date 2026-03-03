@@ -1,7 +1,7 @@
 macos-titlebar-style = hidden
 
 font-family = CaskaydiaCove NF
-font-size = 22
+font-size = 18
 
 # theme = Tomorrow Night Burns
 theme = lackluster
