@@ -14,6 +14,14 @@ local function header_guard()
       :gsub("[^A-Z0-9_]", "_")
 end
 
+local function namespace_comment(args)
+  local name = args[1][1]
+  if name == nil or name == "" then
+    return "anonymous namespace"
+  end
+  return "namespace " .. name
+end
+
 return {
   s("hg", {
     t("#ifndef "), f(header_guard, {}), t({ "", "#define " }),
@@ -24,10 +32,10 @@ return {
   }),
   s("ns", {
     t("namespace "),
-    i(1, "name"),
-    t({ " {", "", "" }),
+    i(1),
+    t({ "{", "", "" }),
     i(2),
-    t({ "", "", "} // namespace " }),
-    rep(1),
+    t({ "", "", "} // " }),
+    f(namespace_comment, {1}),
   }),
 }
