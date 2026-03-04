@@ -115,8 +115,8 @@
     "on-click": "playerctl previous",
     "on-click-right": "playerctl next",
     "on-click-middle": "playerctl play-pause",
-    //"on-scroll-up": "$HOME/.config/hypr/scripts/Volume.sh --inc",
-    //"on-scroll-down": "$HOME/.config/hypr/scripts/Volume.sh --dec"
+    "on-scroll-up": "playerctl --player=spotify volume 0.05+",
+    "on-scroll-down": "playerctl --player=spotify volume 0.05-"
     },
     "custom/cava_mviz": {
         "exec": "$HOME/.local/bin/waybar_cava",
