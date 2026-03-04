@@ -1,0 +1,3 @@
+tmux send-keys "clear" C-m
+tmux new-window -n yazi
+tmux send-keys "yazi" C-m

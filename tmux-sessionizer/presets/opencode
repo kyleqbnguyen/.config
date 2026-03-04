@@ -1,0 +1,4 @@
+tmux send-keys "clear" C-m
+tmux new-window -n vim 'nvim; exec $SHELL'
+tmux new-window -n opencode
+tmux select-window -t vim

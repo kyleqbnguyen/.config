@@ -1,1 +1,0 @@
--- status bar enabled (removed no-status plugin)
