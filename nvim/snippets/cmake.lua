@@ -39,6 +39,16 @@ return {
 
     t({ "", "", "set(CMAKE_EXPORT_COMPILE_COMMANDS ON)", "", "" }),
 
+    t({
+      'if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")',
+      '  add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Wconversion -Werror)',
+      'endif()',
+      '',
+      'if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")',
+      '  add_compile_options(/W4 /WX /permissive-)',
+      'endif()', "", "",
+    }),
+
     d(6, function(args)
       local lang = args[1][1]
       local ext = (lang == "C") and "c" or "cpp"
