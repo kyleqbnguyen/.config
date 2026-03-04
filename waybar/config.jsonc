@@ -1,20 +1,12 @@
 // -*- mode: jsonc -*-
 {
-    // "layer": "top", // Waybar at top layer
-    "position": "top", // Waybar position (top|bottom|left|right)
-    "height": 42, // Waybar height (to be removed for auto height)
-    // "width": 1280, // Waybar width
-    "spacing": 3, // Gaps between modules (4px)
-    // "margin-top": 6,
-    // "margin-right": 6,
+    "position": "top",
+    "height": 42,
+    "spacing": 3,
     "margin-bottom": 1,
-    // "margin-left": 6,
-    // Choose the order of the modules
     "modules-left": [
-        //"custom/menu",
         "custom/spotify",
         "custom/cava_mviz",
-        "mpd"
     ],
     "modules-center": [
         "hyprland/workspaces"
@@ -29,6 +21,21 @@
         "clock"
     ],
     // Modules configuration
+    "custom/spotify": {
+      "exec": "python ~/.config/waybar/mediaplayer.py --player spotify",
+      "format": "{}",
+      "max-length": 35,
+      "return-type": "json",
+      "on-click": "playerctl previous",
+      "on-click-right": "playerctl next",
+      "on-click-middle": "playerctl play-pause",
+      "on-scroll-up": "playerctl --player=spotify volume 0.05+",
+      "on-scroll-down": "playerctl --player=spotify volume 0.05-"
+    },
+    "custom/cava_mviz": {
+      "exec": "$HOME/.local/bin/waybar_cava",
+      "format": "{}"
+    },
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -49,31 +56,36 @@
             "urgent": ""
         }
     },
-    "tray": {
-        "icon-size": 16,
-        "spacing": 10
+    "battery": {
+      "interval": 60,
+      "states": {
+        "warning": 30,
+        "critical": 15
+      },
+      "format": "{icon}",
+      "format-icons": ["", "", "", "", ""],
+      "max-length": 25
+    },
+    "backlight": {
+      "device": "intel_backlight",
+      "format": "{icon} {percent}%",
+      "format-icons": ["", ""]
+    },
+    "cpu": {
+      "interval": 10,
+      "format": "{}%",
+      "max-length": 10
+    },
+    "memory": {
+      "interval": 30,
+      "format": "{avail}G"
     },
     "clock": {
         "interval": 1,
         "format": "{:%m/%d %I:%M}",
-        "tooltip-format": "<tt><small>{calendar}</small></tt>",
-        "calendar": {
-            "mode": "year",
-            "mode-mon-col": 3,
-            "weeks-pos": "right",
-            "on-scroll": 1,
-            "format": {
-                "months": "<span color='#ffead3'><b>{}</b></span>",
-                "days": "<span color='#ecc6d9'><b>{}</b></span>",
-                "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
-                "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
-                "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
-            }
-        }
     },
     "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        //"format": "{icon} {volume}",
+        "scroll-step": 2,
         "format": "{icon} {volume}%",
         "format-muted": "󰝟 Muted",           // Icon for mute (you can also use "" or "")
         "format-icons": {
@@ -81,49 +93,6 @@
         },
         "on-click": "pamixer --toggle-mute",
         "on-click-right": "pavucontrol"
-    },
-    "battery": {
-        "interval": 60,
-        "states": {
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{icon}",
-        "format-icons": ["", "", "", "", ""],
-        "max-length": 25
-    },
-    "backlight": {
-        "device": "intel_backlight",
-        "format": "{percent}% {icon}",
-        "format-icons": ["", ""]
-    },
-    "memory": {
-        "interval": 30,
-        "format": "{avail}G"
-    },
-    "cpu": {
-        "interval": 10,
-        "format": "{}%",
-        "max-length": 10
-    },
-    "custom/spotify": {
-        "exec": "python ~/.config/waybar/mediaplayer.py --player spotify",
-        "format": "{}",
-    //"format": " {}",
-    "max-length": 35,
-    "return-type": "json",
-    "on-click": "playerctl previous",
-    "on-click-right": "playerctl next",
-    "on-click-middle": "playerctl play-pause",
-    "on-scroll-up": "playerctl --player=spotify volume 0.05+",
-    "on-scroll-down": "playerctl --player=spotify volume 0.05-"
-    },
-    "custom/cava_mviz": {
-        "exec": "$HOME/.local/bin/waybar_cava",
-        "format": "{}"
-    },
-    "custom/menu": {
-        "format": "死 "
     },
 },
 
