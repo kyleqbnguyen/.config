@@ -110,6 +110,7 @@ require "telescope".setup({
     find_files = {
       theme = "dropdown",
       borderchars = square_borders,
+      no_ignore = true,
     },
     live_grep = {
       theme = "dropdown",

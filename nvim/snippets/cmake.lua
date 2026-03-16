@@ -37,7 +37,7 @@ return {
       })
     end, { 4 }),
 
-    t({ "", "", "set(CMAKE_EXPORT_COMPILE_COMMANDS ON)", "", "" }),
+    t({ "", "set(CMAKE_EXPORT_COMPILE_COMMANDS ON)", "", "" }),
 
     t({
       'if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")',
