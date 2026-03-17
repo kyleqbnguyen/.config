@@ -105,7 +105,7 @@ source $ZSH/oh-my-zsh.sh
 # - $ZSH_CUSTOM/macos.zsh
 # For a full list of active aliases, run `alias`.
 alias vim="nvim"
-alias tree="tree -I 'target|.cargo|node_modules|dist|.git'"
+alias tree="tree -I 'build|target|.cargo|node_modules|dist|.git'"
 alias ls="ls -CA --color=auto"
 
 bindkey -s ^f "tmux-sessionizer\n"
