@@ -1,4 +1,5 @@
 macos-titlebar-style = hidden
+macos-option-as-alt = true
 
 font-family = CaskaydiaCove Nerd Font Mono
 font-size = 18
