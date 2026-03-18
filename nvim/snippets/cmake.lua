@@ -9,7 +9,7 @@ local sn = ls.snippet_node
 return {
   s("cm", {
     t("cmake_minimum_required(VERSION "),
-    i(1, "4.2.3"),
+    i(1, "3.20"),
     t({ ")", "", "project(", "" }),
     t("  "),
     i(2, "name"),
@@ -39,15 +39,7 @@ return {
 
     t({ "", "set(CMAKE_EXPORT_COMPILE_COMMANDS ON)", "", "" }),
 
-    t({
-      'if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")',
-      '  add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Wconversion -Werror)',
-      'endif()',
-      '',
-      'if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")',
-      '  add_compile_options(/W4 /WX /permissive-)',
-      'endif()', "", "",
-    }),
+    t({ "add_compile_options(-Wall -Wextra -Wpedantic)", "", "" }),
 
     d(6, function(args)
       local lang = args[1][1]
