@@ -62,6 +62,7 @@ vim.pack.add({
   { src = "https://github.com/nvim-treesitter/nvim-treesitter",          version = "main" },
   { src = "https://github.com/L3MON4D3/LuaSnip" },
   { src = "https://github.com/saghen/blink.cmp",                         version = vim.version.range("1.*") },
+  { src = "https://github.com/github/copilot.vim" },
 })
 
 --------------------------------------------------------------------------------
@@ -110,6 +111,7 @@ require "telescope".setup({
     find_files = {
       theme = "dropdown",
       borderchars = square_borders,
+      no_ignore = true,
     },
     live_grep = {
       theme = "dropdown",
@@ -309,7 +311,7 @@ require("blink.cmp").setup({
     preset = "default",
     ['<C-k>'] = false,
   },
-  -- signature = { enabled = true },
+  signature = { enabled = true },
   completion = {
     documentation = { auto_show = true, auto_show_delay_ms = 500 },
     menu = {
