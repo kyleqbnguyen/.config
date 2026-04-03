@@ -104,6 +104,7 @@ source $ZSH/oh-my-zsh.sh
 # - $ZSH_CUSTOM/aliases.zsh
 # - $ZSH_CUSTOM/macos.zsh
 # For a full list of active aliases, run `alias`.
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 alias vim="nvim"
 alias tree="tree -I 'build|target|.cargo|node_modules|dist|.git'"
 alias ls="ls -CA --color=auto"
