@@ -8,7 +8,7 @@ require("statusline")
 vim.g.netrw_banner = 0
 vim.o.number = true
 vim.o.relativenumber = true
-vim.opt.guicursor = { "n-v:block", "i-c:block-blinkon500-blinkoff500" }
+vim.opt.guicursor = { "n-v:block", "i-c:block" }
 vim.o.scrolloff = 8
 vim.o.colorcolumn = "81"
 vim.o.signcolumn = "yes"
@@ -31,10 +31,11 @@ vim.o.swapfile = false
 vim.o.backup = false
 vim.o.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.o.undofile = true
+vim.o.confirm = true
 
 --- Remaps
 vim.keymap.set({ "n", "i", "v", "x", "s", "o" }, "<C-c>", "<Esc>", { silent = true })
-vim.keymap.set("n", "<leader>nw", vim.cmd.Ex)
+-- vim.keymap.set("n", "<leader>nw", vim.cmd.Ex)
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "G", "Gzz")
@@ -47,6 +48,10 @@ vim.keymap.set({ "n", "v", "x" }, "<leader>d", [["+d]])
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww ~/.local/bin/tmux-sessionizer<CR>")
 
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function() vim.highlight.on_yank() end,
+})
+
 --------------------------------------------------------------------------------
 -- Pack
 vim.pack.add({
@@ -54,15 +59,47 @@ vim.pack.add({
   { src = "https://github.com/nvim-lua/plenary.nvim" },
   { src = "https://github.com/nvim-telescope/telescope.nvim" },
   { src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-  { src = "https://github.com/mason-org/mason.nvim" },
   { src = "https://github.com/mbbill/undotree" },
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
   { src = "https://github.com/slugbyte/lackluster.nvim" },
   { src = "https://github.com/ThePrimeagen/harpoon" },
-  { src = "https://github.com/nvim-treesitter/nvim-treesitter",          version = "main" },
+  { src = "https://github.com/nvim-treesitter/nvim-treesitter",          version = "main",                  build = ":TSUpdate" },
   { src = "https://github.com/L3MON4D3/LuaSnip" },
   { src = "https://github.com/saghen/blink.cmp",                         version = vim.version.range("1.*") },
   { src = "https://github.com/github/copilot.vim" },
+  { src = "https://github.com/stevearc/oil.nvim" },
+})
+
+-- Treesitter
+--------------------------------------------------------------------------------
+local treesitter_languages = {
+  "lua",
+  "vim",
+  "vimdoc",
+  "query",
+  "javascript",
+  "typescript",
+  "tsx",
+  "c",
+  "cpp",
+  "cmake",
+  "json",
+  "yaml",
+  "css",
+  "markdown",
+  "markdown_inline",
+  "bash",
+  "toml",
+}
+
+require("nvim-treesitter").setup({
+  install_dir = vim.fn.stdpath("data") .. "/site",
+})
+
+require("nvim-treesitter").install(treesitter_languages)
+
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function() pcall(vim.treesitter.start) end,
 })
 
 --------------------------------------------------------------------------------
@@ -78,19 +115,21 @@ vim.lsp.config("lua_ls", {
   }
 })
 
+vim.keymap.set("n", "grd", vim.lsp.buf.definition, { silent = true })
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "html", "css", },
   callback = function()
-    vim.bo.formatprg = "prettierd"
+    vim.bo.formatprg = "prettier --stdin-filepath %"
   end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "cmake",
-  callback = function()
-    vim.bo.formatprg = "cmake-format -"
-  end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "cmake",
+--   callback = function()
+--     vim.bo.formatprg = "cmake-format -"
+--   end,
+-- })
 
 --------------------------------------------------------------------------------
 --- Telescope
@@ -104,7 +143,7 @@ require "telescope".setup({
         ["<C-c>"] = require("telescope.actions").close,
       },
     },
-    file_ignore_patterns = { "build/", "node_modules/", "target/" },
+    file_ignore_patterns = { ".DS_Store", "build/", "node_modules/", "target/", ".git/", ".cache/", ".next/" },
   },
 
   pickers = {
@@ -112,6 +151,7 @@ require "telescope".setup({
       theme = "dropdown",
       borderchars = square_borders,
       no_ignore = true,
+      hidden = true,
     },
     live_grep = {
       theme = "dropdown",
@@ -121,7 +161,7 @@ require "telescope".setup({
       theme = "dropdown",
       borderchars = square_borders,
     },
-    git_files = {
+    diagnostics = {
       theme = "dropdown",
       borderchars = square_borders,
     },
@@ -139,8 +179,8 @@ require "telescope".setup({
 
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>")
 vim.keymap.set("n", "<leader>gr", ":Telescope live_grep<CR>")
-vim.keymap.set("n", "<leader>gf", ":Telescope git_files<CR>")
 vim.keymap.set("n", "<leader>ht", ":Telescope help_tags<CR>")
+vim.keymap.set("n", "<leader>vd", ":Telescope diagnostics<CR>")
 
 --------------------------------------------------------------------------------
 --- Colorscheme
@@ -171,6 +211,37 @@ require("lackluster").setup({
     FloatBorder = {
       overwrite = true,
       bg = "NONE",
+    },
+    markdownCode = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    markdownCodeBlock = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    RenderMarkdownCode = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    RenderMarkdownCodeInline = {
+      overwrite = true,
+      fg = color.gray6,
+      bg = "NONE",
+    },
+    RenderMarkdownCodeBorder = {
+      overwrite = true,
+      bg = "NONE",
+    },
+    ["@markup.strong"] = {
+      overwrite = true,
+      fg = color.gray4,
+      bold = true,
+    },
+    ["@markup.italic"] = {
+      overwrite = true,
+      fg = color.gray4,
+      italic = true,
     },
     MatchParen = {
       overwrite = true,
@@ -237,8 +308,8 @@ require("lackluster").setup({
   },
   tweak_background = {
     normal = 'none',
-    menu = color.gray3,
-    popup = 'default',
+    menu = 'none',
+    popup = 'none',
   },
 })
 vim.cmd("colorscheme lackluster-dark")
@@ -264,10 +335,29 @@ require("render-markdown").setup({
     backgrounds = {},
   },
   code = {
+    highlight_border = false,
     width = 'block',
     -- min_width = 80,
   },
+  overrides = {
+    buftype = {
+      nofile = {
+        code = {
+          highlight = 'NormalFloat',
+          highlight_inline = 'NormalFloat',
+          highlight_border = 'NormalFloat',
+          language_border = '',
+        },
+      },
+    },
+  },
 })
+
+vim.schedule(function()
+  vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = "NONE" })
+  vim.api.nvim_set_hl(0, "RenderMarkdownCodeInline", { fg = color.gray6, bg = "NONE" })
+  vim.api.nvim_set_hl(0, "RenderMarkdownCodeBorder", { bg = "NONE" })
+end)
 
 --------------------------------------------------------------------------------
 --- Luasnip
@@ -309,9 +399,15 @@ require("blink.cmp").setup({
   },
   keymap = {
     preset = "default",
-    ['<C-k>'] = false,
+    ["<C-s>"] = { "show_signature", "hide_signature", "fallback" },
+    ["<C-k>"] = false,
   },
-  signature = { enabled = true },
+  signature = {
+    enabled = true,
+    trigger = {
+      enabled = false,
+    },
+  },
   completion = {
     documentation = { auto_show = true, auto_show_delay_ms = 500 },
     menu = {
@@ -324,13 +420,19 @@ require("blink.cmp").setup({
   },
 })
 
-vim.api.nvim_set_hl(0, "Pmenu", { bg = "none" })
-vim.api.nvim_set_hl(0, "BlinkCmpMenu", { bg = "none" })
-vim.api.nvim_set_hl(0, "BlinkCmpMenuBorder", { bg = "none" })
+--------------------------------------------------------------------------------
+--- Oil
+require("oil").setup({
+  default_file_explorer = true,
+  keymaps = {
+    ["<C-c>"] = false,
+  },
+})
+
+vim.keymap.set("n", "<leader>nw", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
 --------------------------------------------------------------------------------
---- No Config
-require("mason").setup()
-
+--- Copilot
 vim.g.copilot_enabled = 0
+
 --------------------------------------------------------------------------------

@@ -167,13 +167,13 @@ return {
     end, { 4, 6 }),
   }),
 
-  --- SMOKE
+  --- TEST
   ------------------------------------------------------------------------------
   s("test", {
     t("add_executable("),
     i(1, "${PROJECT_NAME}_tests"),
     t(" "),
-    i(2, "smoke_test.cpp"),
+    i(2, "test_test.cpp"),
     t({
       ")",
       "",

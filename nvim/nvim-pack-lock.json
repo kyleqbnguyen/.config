@@ -21,10 +21,6 @@
       "rev": "b247a6f51cb43e49f3f753f4a59553b698bf5438",
       "src": "https://github.com/slugbyte/lackluster.nvim"
     },
-    "mason.nvim": {
-      "rev": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65",
-      "src": "https://github.com/mason-org/mason.nvim"
-    },
     "nvim-lspconfig": {
       "rev": "d89f4891f0720cd2598e4bdd60010d8784b2ac8a",
       "src": "https://github.com/neovim/nvim-lspconfig"
@@ -33,6 +29,10 @@
       "rev": "4967fa48b0fe7a7f92cee546c76bb4bb61bb14d5",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
+    },
+    "oil.nvim": {
+      "rev": "0fcc83805ad11cf714a949c98c605ed717e0b83e",
+      "src": "https://github.com/stevearc/oil.nvim"
     },
     "plenary.nvim": {
       "rev": "b9fd5226c2f76c951fc8ed5923d85e4de065e509",
