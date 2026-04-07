@@ -10,7 +10,7 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.opt.guicursor = { "n-v:block", "i-c:block-blinkon500-blinkoff500" }
 vim.o.scrolloff = 8
-vim.o.colorcolumn = "81"
+vim.o.colorcolumn = "80"
 vim.o.signcolumn = "yes"
 vim.o.winborder = "single"
 vim.o.termguicolors = true
@@ -341,7 +341,7 @@ require("render-markdown").setup({
   code = {
     highlight_border = false,
     width = 'block',
-    -- min_width = 80,
+    style = 'normal',
   },
   overrides = {
     buftype = {
@@ -434,6 +434,7 @@ require("oil").setup({
   view_options = {
     show_hidden = true,
   },
+  skip_confirm_for_simple_edits = true,
 })
 
 vim.keymap.set("n", "<leader>nw", "<CMD>Oil<CR>", { desc = "Open parent directory" })

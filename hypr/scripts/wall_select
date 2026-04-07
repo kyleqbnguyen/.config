@@ -23,7 +23,7 @@
 #
 # Dependencies:
 #   → Core: hyprland, rofi, jq, xxhsum (xxhash)
-#   → Media: swww, imagemagick
+#   → Media: awww, imagemagick
 #   → GNU: findutils, coreutils
 
 
@@ -120,15 +120,15 @@ wall_selection=$(find "${wall_dir}" -type f \( -iname "*.jpg" -o -iname "*.jpeg"
         fi
     done | $rofi_command)
 
-# SWWW Config
+# AWWW Config
 FPS=60
-TYPE="left"
-DURATION=2
+TYPE="wipe"
+DURATION="1.5"
 BEZIER=".43,1.19,1,.4"
-SWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION"
+AWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-angle 180"
 
-# initiate swww if not running
-swww query || swww-daemon --format xrgb
+# initiate awww if not running
+awww query || awww-daemon --format xrgb
 
 # Set wallpaper
-[[ -n "$wall_selection" ]] && swww img -o "$focused_monitor" "${wall_dir}/${wall_selection}" $SWWW_PARAMS;
+[[ -n "$wall_selection" ]] && awww img -o "$focused_monitor" "${wall_dir}/${wall_selection}" $AWWW_PARAMS;
