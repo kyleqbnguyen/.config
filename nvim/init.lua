@@ -16,6 +16,7 @@ vim.o.winborder = "single"
 vim.o.termguicolors = true
 
 -- Text
+-- vim.g.markdown_recommended_style = false
 vim.o.tabstop = 2
 vim.o.expandtab = true
 vim.o.shiftwidth = 2
@@ -66,9 +67,13 @@ vim.pack.add({
   { src = "https://github.com/nvim-treesitter/nvim-treesitter",          version = "main",                  build = ":TSUpdate" },
   { src = "https://github.com/L3MON4D3/LuaSnip" },
   { src = "https://github.com/saghen/blink.cmp",                         version = vim.version.range("1.*") },
-  { src = "https://github.com/github/copilot.vim" },
+  { src = "https://github.com/github/copilot.vim",                       load = false },
   { src = "https://github.com/stevearc/oil.nvim" },
 })
+
+for _, path in ipairs(vim.fn.glob(vim.fn.stdpath("data") .. "/site/pack/*/opt/copilot.vim", false, true)) do
+  vim.opt.runtimepath:remove(path)
+end
 
 -- Treesitter
 --------------------------------------------------------------------------------
@@ -115,21 +120,21 @@ vim.lsp.config("lua_ls", {
   }
 })
 
-vim.keymap.set("n", "grd", vim.lsp.buf.definition, { silent = true })
-
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "html", "css", },
+  pattern = { "markdown", "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "html", "css", },
   callback = function()
-    vim.bo.formatprg = "prettier --stdin-filepath %"
+    vim.bo.formatprg = "prettier --ignore-path /dev/null --stdin-filepath %"
   end,
 })
 
--- vim.api.nvim_create_autocmd("FileType", {
---   pattern = "cmake",
---   callback = function()
---     vim.bo.formatprg = "cmake-format -"
---   end,
--- })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "cmake",
+  callback = function()
+    vim.bo.formatprg = "cmake-format -"
+  end,
+})
+
+vim.keymap.set("n", "grd", vim.lsp.buf.definition, { silent = true })
 
 --------------------------------------------------------------------------------
 --- Telescope
@@ -441,6 +446,32 @@ vim.keymap.set("n", "<leader>nw", "<CMD>Oil<CR>", { desc = "Open parent director
 
 --------------------------------------------------------------------------------
 --- Copilot
+local function loadCopilot()
+  if vim.g.loaded_copilot == 1 then
+    return
+  end
+
+  vim.api.nvim_del_user_command("Copilot")
+  vim.cmd.packadd("copilot.vim")
+end
+
+vim.api.nvim_create_user_command("Copilot", function(opts)
+  loadCopilot()
+
+  local command = { "Copilot" }
+  if opts.bang then
+    command[1] = "Copilot!"
+  end
+  if opts.args ~= "" then
+    table.insert(command, opts.args)
+  end
+
+  vim.cmd(table.concat(command, " "))
+end, {
+  bang = true,
+  nargs = "*",
+})
+
 vim.g.copilot_enabled = 0
 
 --------------------------------------------------------------------------------

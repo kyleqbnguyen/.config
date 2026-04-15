@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
+SESSION=$(tmux display-message -p '#S')
+LOCK_DIR="/tmp/claude-notify-lock-${SESSION}"
+
+# Atomic lock — mkdir is race-safe unlike file existence checks
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    exit 0
+fi
+trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
+
 CLIENT=$(tmux display-message -p '#{client_name}')
 TARGET=$(tmux display-message -p '#S:#I.#P')
-SESSION=$(tmux display-message -p '#S')
 
 result=$(notify-send -A "default=Switch to session" -t 0 \
   "Claude Code [$SESSION]" "Needs your attention")

@@ -4,191 +4,212 @@ local i   = ls.insert_node
 local t   = ls.text_node
 local c   = ls.choice_node
 local d   = ls.dynamic_node
+local f   = ls.function_node
 local sn  = ls.snippet_node
 local rep = require("luasnip.extras").rep
+local ai  = require("luasnip.nodes.absolute_indexer")
 
-local function make_standard_block(lang)
-  local prefix = (lang == "C") and "C" or "CXX"
-  local standards = (lang == "C")
-      and { t("17"), t("11") }
-      or { t("20"), t("23"), t("17") }
+local function projectMacroName(args)
+  local name = args[1][1] or ""
+  return name:upper():gsub("[^%w]", "_")
+end
 
+local function buildTestsOption(ref)
+  return f(function(args)
+    return projectMacroName(args) .. "_BUILD_TESTS"
+  end, { ref })
+end
+
+local function bodyExecutable()
   return sn(nil, {
-    t("set(CMAKE_" .. prefix .. "_STANDARD "),
-    c(1, standards),
     t({
+      "file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS \"src/*.cpp\")",
+      "",
+      "add_executable(${PROJECT_NAME} ${SOURCES})",
+      "",
+      "target_include_directories(${PROJECT_NAME}",
+      "    PRIVATE",
+      "        ${CMAKE_CURRENT_SOURCE_DIR}/include",
       ")",
-      "set(CMAKE_" .. prefix .. "_STANDARD_REQUIRED ON)",
-      "set(CMAKE_" .. prefix .. "_EXTENSIONS OFF)",
+      "",
+      "target_compile_options(${PROJECT_NAME} PRIVATE",
+      "    -Wall -Wextra -Wpedantic",
+      ")",
     }),
   })
 end
 
-local function make_exe_block(lang)
-  local ext = (lang == "C") and "c" or "cpp"
-
+local function bodyTestedLibrary()
   return sn(nil, {
-    t({ "add_executable(${PROJECT_NAME} src/" }),
-    i(1, "main." .. ext),
+    t("option("),
+    buildTestsOption(ai[2]),
+    t(" \"Build tests\" "),
+    c(1, { t("ON"), t("OFF") }),
+    t({ ")", "", "" }),
     t({
-      ")",
+      "file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS \"src/*.cpp\")",
+      "",
+      "add_library(${PROJECT_NAME} ${LIB_SOURCES})",
       "",
       "target_include_directories(${PROJECT_NAME}",
-      "                           PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)",
+      "    PUBLIC",
+      "        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>",
+      "        $<INSTALL_INTERFACE:include>",
+      ")",
+      "",
+      "target_compile_options(${PROJECT_NAME} PRIVATE",
+      "    -Wall -Wextra -Wpedantic",
+      ")",
+      "",
+      "if(",
+    }),
+    buildTestsOption(ai[2]),
+    t({
+      ")",
+      "    enable_testing()",
+      "    add_subdirectory(tests)",
+      "endif()",
     }),
   })
 end
 
-local function make_lib_block(lang)
-  local ext = (lang == "C") and "c" or "cpp"
-
+local function bodyLibPlusExe()
   return sn(nil, {
-    t({ "add_library(${PROJECT_NAME} src/" }),
-    i(1, "file." .. ext),
+    t("option("),
+    buildTestsOption(ai[2]),
+    t(" \"Build tests\" "),
+    c(1, { t("ON"), t("OFF") }),
+    t({ ")", "", "" }),
     t({
+      "file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS \"src/*.cpp\")",
+      "",
+      "add_library(${PROJECT_NAME}_lib ${LIB_SOURCES})",
+      "",
+      "target_include_directories(${PROJECT_NAME}_lib",
+      "    PUBLIC",
+      "        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>",
       ")",
       "",
-      "target_include_directories(${PROJECT_NAME}",
-      "                           PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)",
+      "target_compile_options(${PROJECT_NAME}_lib PRIVATE -Wall -Wextra -Wpedantic)",
+      "",
+      "add_executable(${PROJECT_NAME} app/main.cpp)",
+      "target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_lib)",
+      "",
+      "if(",
     }),
-  })
-end
-
-local function make_gtest_empty_block()
-  return sn(nil, {
-    t({
-      "include(FetchContent)",
-      "FetchContent_Declare(",
-      "  googletest",
-      "  GIT_REPOSITORY https://github.com/google/googletest.git",
-      "  GIT_TAG ",
-    }),
-    i(1, "v1.14.0"),
-    t({
-      "",
-      ")",
-      "FetchContent_MakeAvailable(googletest)",
-      "",
-      "add_library(${PROJECT_NAME} INTERFACE)",
-      "",
-      "target_include_directories(${PROJECT_NAME}",
-      "                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)",
-      "",
-      "enable_testing()",
-      "add_subdirectory(tests)",
-    }),
-  })
-end
-
-local function make_gtest_block(lang)
-  local ext = (lang == "C") and "c" or "cpp"
-
-  return sn(nil, {
-    t({
-      "include(FetchContent)",
-      "FetchContent_Declare(",
-      "  googletest",
-      "  GIT_REPOSITORY https://github.com/google/googletest.git",
-      "  GIT_TAG ",
-    }),
-    i(1, "v1.14.0"),
-    t({
-      "",
-      ")",
-      "FetchContent_MakeAvailable(googletest)",
-      "",
-      "add_library(${PROJECT_NAME} src/",
-    }),
-    i(2, "file." .. ext),
+    buildTestsOption(ai[2]),
     t({
       ")",
-      "",
-      "target_include_directories(${PROJECT_NAME}",
-      "                           PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)",
-      "",
-      "enable_testing()",
-      "add_subdirectory(tests)",
+      "    enable_testing()",
+      "    add_subdirectory(tests)",
+      "endif()",
     }),
   })
 end
 
 return {
-  --- MAIN
-  ------------------------------------------------------------------------------
+  s("file", {
+    t("file(GLOB_RECURSE "),
+    i(1, "name"),
+    t({ " DEPENDS_ON \"" }),
+    i(2, ""),
+    t({ "\")" }),
+  }),
+
+  --- cm: shared-top CMake with body cycling
   s("cm", {
     t("cmake_minimum_required(VERSION "),
     i(1, "3.20"),
-    t({ ")", "", "project(", "" }),
-    t("  "),
+    t({ ")", "project(" }),
     i(2, "name"),
-    t({ "", "  VERSION " }),
+    t({ "", "    VERSION " }),
     i(3, "0.1.0"),
-    t({ "", "  LANGUAGES " }),
-    c(4, { t("CXX"), t("C") }),
-    t({ ")", "", "" }),
-
-    d(5, function(args)
-      return make_standard_block(args[1][1])
-    end, { 4 }),
-
-    t({
-      "",
-      "",
-      "set(CMAKE_EXPORT_COMPILE_COMMANDS ON)",
-      "",
-      "add_compile_options(-Wall -Wextra -Wpedantic)",
-      "",
-      ""
-    }),
-
-    t("# "),
-    c(6, {
+    t({ "", "    DESCRIPTION \"" }),
+    i(4, "desc"),
+    t({ "\"", "    LANGUAGES CXX)", "", "" }),
+    t("set(CMAKE_CXX_STANDARD "),
+    c(5, { t("20"), t("23"), t("17") }),
+    t({ ")", "set(CMAKE_CXX_STANDARD_REQUIRED ON)", "set(CMAKE_CXX_EXTENSIONS OFF)", "set(CMAKE_EXPORT_COMPILE_COMMANDS ON)", "", "" }),
+    t({ "if(NOT CMAKE_BUILD_TYPE)", "    set(CMAKE_BUILD_TYPE " }),
+    c(6, { t("Release"), t("Debug") }),
+    t({ ")", "endif()", "", "# " }),
+    c(7, {
       t("exe"),
       t("lib"),
-      t("gtest"),
-      t("gtest-empty"),
+      t("lib+exe"),
     }),
-
     t({ "", "" }),
-
-    d(7, function(args)
-      local lang = args[1][1]
-      local mode = args[2][1]
-
-      if mode == "exe" then
-        return make_exe_block(lang)
-      elseif mode == "lib" then
-        return make_lib_block(lang)
-      elseif mode == "gtest-empty" then
-        return make_gtest_empty_block()
+    d(8, function(args)
+      local mode = args[1][1]
+      if mode == "lib" then
+        return bodyTestedLibrary()
+      elseif mode == "lib+exe" then
+        return bodyLibPlusExe()
       else
-        return make_gtest_block(lang)
+        return bodyExecutable()
       end
-    end, { 4, 6 }),
+    end, { 7 }),
   }),
 
-  --- TEST
-  ------------------------------------------------------------------------------
-  s("test", {
-    t("add_executable("),
-    i(1, "${PROJECT_NAME}_tests"),
-    t(" "),
-    i(2, "test_test.cpp"),
+  --- cmh: header-only library
+  s("cmh", {
+    t("cmake_minimum_required(VERSION "),
+    i(1, "3.20"),
+    t({ ")", "project(" }),
+    i(2, "my_header_lib"),
+    t(" VERSION "),
+    i(3, "0.1.0"),
+    t({ " LANGUAGES CXX)", "", "" }),
     t({
+      "add_library(${PROJECT_NAME} INTERFACE)",
+      "",
+      "target_include_directories(${PROJECT_NAME}",
+      "    INTERFACE",
+      "        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>",
+      "        $<INSTALL_INTERFACE:include>",
       ")",
       "",
-      "target_link_libraries(",
+      "target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_",
     }),
-    rep(1),
-    t(" PRIVATE ${PROJECT_NAME}"),
+    c(4, { t("20"), t("23"), t("17") }),
+    t({ ")", "", "" }),
+    t("option("),
+    buildTestsOption(2),
+    t(" \"Build tests\" "),
+    c(5, { t("ON"), t("OFF") }),
+    t({ ")", "" }),
+    t("if("),
+    buildTestsOption(2),
     t({
-      "",
-      "                                                    GTest::gtest_main)",
-      "",
-      "include(GoogleTest)",
-      "gtest_discover_tests(",
+      " AND CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)",
+      "    enable_testing()",
+      "    add_subdirectory(tests)",
+      "endif()",
     }),
-    rep(1),
+  }),
+
+  --- cmt: tests/CMakeLists.txt with GoogleTest
+  s("cmt", {
+    t({
+      "include(FetchContent)",
+      "",
+      "FetchContent_Declare(",
+      "    googletest",
+      "    GIT_REPOSITORY https://github.com/google/googletest.git",
+      "    GIT_TAG        ",
+    }),
+    i(1, "v1.14.0"),
+    t({ "", ")", "FetchContent_MakeAvailable(googletest)", "", "" }),
+    t({ "file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS \"*.cpp\")", "", "add_executable(" }),
+    i(2, "${PROJECT_NAME}_tests"),
+    t({ " ${TEST_SOURCES})", "", "" }),
+    t("target_link_libraries("),
+    rep(2),
+    t({ "", "    PRIVATE", "        " }),
+    i(3, "my_lib"),
+    t({ "", "        GTest::gtest_main", ")", "", "" }),
+    t({ "include(GoogleTest)", "gtest_discover_tests(" }),
+    rep(2),
     t(")"),
   }),
 }
