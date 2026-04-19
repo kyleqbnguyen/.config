@@ -27,7 +27,7 @@ vim.o.undofile = true
 vim.o.confirm = true
 
 vim.api.nvim_create_autocmd("TextYankPost", {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+	callback = function()
+		vim.highlight.on_yank()
+	end,
 })
