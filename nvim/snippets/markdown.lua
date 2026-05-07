@@ -6,6 +6,7 @@ local t = ls.text_node
 local f = ls.function_node
 local d = ls.dynamic_node
 local sn = ls.snippet_node
+local r = ls.restore_node
 
 local function currentDate()
 	return os.date("%m-%d-%Y")
@@ -16,6 +17,26 @@ return {
 		t("- [ ] **"),
 		i(1),
 		t("**"),
+	}),
+
+	s("hd", {
+		c(1, {
+      sn(nil, {
+        t("## **"),
+        r(1, "heading", i(1)),
+        t("**"),
+      }),
+			sn(nil, {
+				t("### **"),
+				r(1, "heading", i(1)),
+				t("**"),
+			}),
+			sn(nil, {
+				t("#### **"),
+				r(1, "heading", i(1)),
+				t("**"),
+			}),
+		}),
 	}),
 
 	s("frontmatter", {

@@ -17,6 +17,7 @@ local treesitter_languages = {
 	"bash",
 	"toml",
 	"rust",
+	"python",
 }
 
 require("nvim-treesitter").setup({

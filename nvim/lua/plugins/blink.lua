@@ -28,6 +28,7 @@ require("blink.cmp").setup({
 	},
 	keymap = {
 		preset = "default",
+		["<Tab>"] = false,
 		["<C-s>"] = { "show_signature", "hide_signature", "fallback" },
 		["<C-k>"] = false,
 	},

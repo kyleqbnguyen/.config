@@ -18,6 +18,7 @@ return {
       "DerivePointerAlignment: false",
       "",
       "AllowShortIfStatementsOnASingleLine: WithoutElse",
+      "BreakTemplateDeclarations: Yes",
       "",
       "FixNamespaceComments: true",
       "ShortNamespaceLines: 0",

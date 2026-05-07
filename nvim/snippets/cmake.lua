@@ -61,11 +61,6 @@ end
 
 local function bodyTestedLibrary()
 	return sn(nil, {
-		t("option("),
-		buildTestsOption(ai[2]),
-		t(' "Build tests" '),
-		c(1, { t("ON"), t("OFF") }),
-		t({ ")", "", "" }),
 		t({
 			'file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS "src/*.cpp")',
 			"",
@@ -76,26 +71,12 @@ local function bodyTestedLibrary()
 			"                         $<INSTALL_INTERFACE:include>)",
 			"",
 			"target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)",
-			"",
-			"if(",
-		}),
-		buildTestsOption(ai[2]),
-		t({
-			")",
-			"  enable_testing()",
-			"  add_subdirectory(tests)",
-			"endif()",
 		}),
 	})
 end
 
 local function bodyLibPlusExe()
 	return sn(nil, {
-		t("option("),
-		buildTestsOption(ai[2]),
-		t(' "Build tests" '),
-		c(1, { t("ON"), t("OFF") }),
-		t({ ")", "", "" }),
 		t({
 			'file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS "src/*.cpp")',
 			"",
@@ -109,40 +90,17 @@ local function bodyLibPlusExe()
 			"",
 			"add_executable(${PROJECT_NAME} app/main.cpp)",
 			"target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_lib)",
-			"",
-			"if(",
-		}),
-		buildTestsOption(ai[2]),
-		t({
-			")",
-			"  enable_testing()",
-			"  add_subdirectory(tests)",
-			"endif()",
 		}),
 	})
 end
 
 local function bodySubModules()
 	return sn(nil, {
-		t("option("),
-		buildTestsOption(ai[2]),
-		t(' "Build tests" '),
-		c(1, { t("ON"), t("OFF") }),
-		t({ ")", "", "" }),
 		t({
 			"list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)",
 			"include(deps)",
 			"",
 			"add_subdirectory(src)",
-			"",
-			"if(",
-		}),
-		buildTestsOption(ai[2]),
-		t({
-			")",
-			"  enable_testing()",
-			"  add_subdirectory(tests)",
-			"endif()",
 		}),
 	})
 end
@@ -189,17 +147,18 @@ return {
 			"",
 			"",
 		}),
-		t({ "if(NOT CMAKE_BUILD_TYPE)", "  set(CMAKE_BUILD_TYPE " }),
-		c(6, { t("Debug"), t("Release") }),
-		t({ ")", "endif()", "", "# " }),
-		c(7, {
+		t({ "if(NOT CMAKE_BUILD_TYPE)", "  set(CMAKE_BUILD_TYPE Debug)" }),
+		t({ "", "endif()", "", "" }),
+		t({ 'option(BUILD_TESTS "Build tests" OFF)', "" }),
+		t({ 'option(BUILD_BENCH "Build benchmarks" OFF)', "", "# " }),
+		c(6, {
 			t("exe"),
 			t("lib"),
 			t("lib+exe"),
 			t("submodules"),
 		}),
 		t({ "", "" }),
-		d(8, function(args)
+		d(7, function(args)
 			local mode = args[1][1]
 			if mode == "lib" then
 				return bodyTestedLibrary()
@@ -207,10 +166,22 @@ return {
 				return bodyLibPlusExe()
 			elseif mode == "exe" then
 				return bodyExecutable()
-      else
+			else
 				return bodySubModules()
 			end
-		end, { 7 }),
+		end, { 6 }),
+		t({
+			"",
+			"",
+			"if(BUILD_TESTS)",
+			"  enable_testing()",
+			"  add_subdirectory(tests)",
+			"endif()",
+			"",
+			"if(BUILD_BENCH)",
+			"  add_subdirectory(bench)",
+			"endif()",
+		}),
 	}),
 
 	--- cmh: header-only library

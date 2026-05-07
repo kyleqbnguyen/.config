@@ -1,4 +1,4 @@
-vim.lsp.enable({ "lua_ls", "ts_ls", "eslint", "rust_analyzer", "clangd" })
+vim.lsp.enable({ "lua_ls", "ts_ls", "eslint", "rust_analyzer", "clangd", "pyright" })
 
 vim.lsp.config("lua_ls", {
 	settings = {

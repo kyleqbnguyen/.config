@@ -14,6 +14,7 @@ require("conform").setup({
 		cpp = { "clang_format" },
 		c = { "clang_format" },
 		lua = { "stylua" },
+		python = { "autopep8" },
 	},
 	formatters = {
 		clang_format = {
@@ -22,6 +23,9 @@ require("conform").setup({
 		prettier = {
 			command = vim.fn.expand("~/.npm-global/bin/prettier"),
 			prepend_args = { "--prose-wrap", "always", "--ignore-path", "/dev/null" },
+		},
+		autopep8 = {
+			prepend_args = { "--max-line-length=80", "--aggressive" },
 		},
 	},
 })

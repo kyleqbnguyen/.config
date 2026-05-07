@@ -19,6 +19,9 @@ require("telescope").setup({
 			".cache/",
 			".next/",
       "%.pdf$",
+      ".venv/",
+      "__pycache__/",
+      ".egg.info/",
 		},
 	},
 	pickers = {
