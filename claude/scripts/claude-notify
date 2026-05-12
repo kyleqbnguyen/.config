@@ -1,19 +1,63 @@
 #!/usr/bin/env bash
-SESSION=$(tmux display-message -p '#S')
-LOCK_DIR="/tmp/claude-notify-lock-${SESSION}"
+terminal_class="com.mitchellh.ghostty"
 
-# Atomic lock — mkdir is race-safe unlike file existence checks
-if ! mkdir "$LOCK_DIR" 2>/dev/null; then
-    exit 0
+event="${1:-Notification}"
+case "$event" in
+    Stop) body="Finished" ;;
+    *)    body="Needs your attention" ;;
+esac
+
+session_id=""
+session_name=""
+window_id=""
+
+is_focused() {
+    [[ -z "$TMUX_PANE" ]] && return 1
+    local pa wa sa _sid _sname _wid
+    read -r pa wa sa _sid _sname _wid < <(
+        tmux display-message -p -t "$TMUX_PANE" \
+            -F '#{pane_active} #{window_active} #{session_attached} #{session_id} #{session_name} #{window_id}' 2>/dev/null
+    )
+    [[ "$pa" == 1 && "$wa" == 1 && "${sa:-0}" -gt 0 ]] || return 1
+    if command -v hyprctl >/dev/null 2>&1; then
+        local ac
+        ac=$(hyprctl activewindow -j 2>/dev/null | jq -r '.class // empty')
+        [[ "$ac" == "$terminal_class" ]] || return 1
+    fi
+    return 0
+}
+
+if [[ -n "$TMUX_PANE" ]]; then
+    read -r _ _ _ session_id session_name window_id < <(
+        tmux display-message -p -t "$TMUX_PANE" \
+            -F '#{pane_active} #{window_active} #{session_attached} #{session_id} #{session_name} #{window_id}' 2>/dev/null
+    )
 fi
-trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
 
-CLIENT=$(tmux display-message -p '#{client_name}')
-TARGET=$(tmux display-message -p '#S:#I.#P')
+title="${session_name:-Claude Code}"
 
-result=$(notify-send -A "default=Switch to session" -t 0 \
-  "Claude Code [$SESSION]" "Needs your attention")
+is_focused && exit 0
 
-if [ "$result" = "default" ]; then
-  tmux switch-client -c "$CLIENT" -t "$TARGET"
+note_id=$(( 0x$(printf '%s' "${TMUX_PANE:-no-tmux}" | sha1sum | cut -c1-7) ))
+
+(
+    while sleep 1; do
+        if is_focused; then
+            dunstify -C "$note_id" >/dev/null 2>&1
+            exit 0
+        fi
+    done
+) &
+watcher_pid=$!
+trap 'kill "$watcher_pid" 2>/dev/null' EXIT
+
+action=$(dunstify -t 0 -r "$note_id" -A "default,Switch to Claude" \
+    -i utilities-terminal -u normal \
+    "$title" "$body")
+
+if [[ "$action" == "default" && -n "$session_id" && -n "$window_id" ]]; then
+    tmux switch-client -t "$session_id" 2>/dev/null
+    tmux select-window -t "$window_id" 2>/dev/null
+    command -v hyprctl >/dev/null 2>&1 && \
+        hyprctl dispatch focuswindow "class:$terminal_class" >/dev/null 2>&1
 fi
