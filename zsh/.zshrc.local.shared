@@ -19,7 +19,6 @@ _PROJECT_EXCLUDES=(
   --exclude='dist/'
   --exclude='.next/'
   --exclude='.claude/'
-  --exclude='.opencode/'
 )
 
 _VAULT_EXCLUDES=(
@@ -80,9 +79,6 @@ portal_should_ignore() {
       return 0
       ;;
     .claude|*/.claude|*/.claude/*)
-      return 0
-      ;;
-    .opencode|*/.opencode|*/.opencode/*)
       return 0
       ;;
     .obsidian/workspace.json|*/.obsidian/workspace.json)

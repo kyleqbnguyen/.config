@@ -2,9 +2,21 @@
 terminal_class="com.mitchellh.ghostty"
 
 event="${1:-Notification}"
+
+payload=""
+if [[ ! -t 0 ]]; then
+    payload=$(cat)
+fi
+
 case "$event" in
     Stop) body="Finished" ;;
-    *)    body="Needs your attention" ;;
+    *)
+        msg=$(jq -r '.message // empty' <<<"$payload" 2>/dev/null)
+        if [[ "$msg" == *"waiting for your input"* ]]; then
+            exit 0
+        fi
+        body="${msg:-Needs your attention}"
+        ;;
 esac
 
 session_id=""

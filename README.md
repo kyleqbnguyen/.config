@@ -38,7 +38,6 @@ Personal config. Linux (Hyprland) + macOS. Symlink each subdir into `~/.config/`
 | `zsh/`              | zsh                                                                   | Shell config (`.zshrc` + platform splits)            |
 | `yazi/`             | [Yazi](https://github.com/sxyazi/yazi)                                | TUI file manager                                     |
 | `sioyek/`           | [Sioyek](https://sioyek.info/)                                        | PDF reader (used by `tmux-sessionizer/presets/read`) |
-| `opencode/`         | [opencode](https://opencode.ai/)                                      | AI coding agent                                      |
 | `claude/`           | Claude Code                                                           | CLAUDE.md + scripts                                  |
 
 ## Required packages
@@ -90,7 +89,6 @@ Install from [Nerd Fonts](https://www.nerdfonts.com/font-downloads).
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — `claude/`
   configs
-- [opencode](https://opencode.ai/) — `opencode/` configs
 
 ## Installation
 
