@@ -74,7 +74,10 @@ function parseUsageLimit(headers: Record<string, string>, patterns: RegExp[]): U
 }
 
 function formatTime(date: Date): string {
-	return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+	const hours = date.getHours();
+	const hour12 = hours % 12 || 12;
+	const suffix = hours < 12 ? "am" : "pm";
+	return `${hour12}:${date.getMinutes().toString().padStart(2, "0")}${suffix}`;
 }
 
 function formatReset(date: Date, preferDate: boolean): string {
@@ -85,7 +88,7 @@ function formatReset(date: Date, preferDate: boolean): string {
 
 function formatUsageLimit(limit: UsageLimit | undefined, preferDate = false): string | undefined {
 	if (!limit) return undefined;
-	return `${limit.percentUsed.toFixed(0)}% (󰜉 ${formatReset(limit.reset, preferDate)})`;
+	return `${limit.percentUsed.toFixed(0)}% [󰜉 ${formatReset(limit.reset, preferDate)}]`;
 }
 
 function authPath(): string | undefined {
